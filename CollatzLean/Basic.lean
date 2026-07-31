@@ -17,6 +17,12 @@ def col (n : ℕ+) : ℕ+ :=
   else
     3 * n + 1
 
+def col_two (n : ℕ+) : ℕ+ :=
+  if (n % 2 : ℕ) = 0 then
+    PNat.divExact n 2
+  else
+    PNat.divExact (3 * n + 1) 2
+
 def col_pow (k : ℕ) : ℕ+ → ℕ+ :=
   if k = 0 then
     id
