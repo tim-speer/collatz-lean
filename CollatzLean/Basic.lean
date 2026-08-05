@@ -7,6 +7,7 @@ Authors: Tim Speer
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Cases
+import Mathlib.Data.Finset.Max
 
 /-!
 -/
@@ -30,6 +31,8 @@ def col_pow (k : ℕ) : ℕ+ → ℕ+ :=
     col ∘ col_pow (k - 1)
 
 def col_orbit (n : ℕ+) : Set ℕ+ := { col_pow k n | k : ℕ }
+
+def odd_nat : Set ℕ := { n : ℕ | Odd n}
 
 theorem col_pow_zero_self (n : ℕ+) : col_pow 0 n = n := by
   rw [col_pow]
@@ -85,3 +88,5 @@ theorem col_orbit_one : col_orbit 1 = { 1, 2, 4 } := by
       iterate 2
         rw [col_pow]
       trivial
+
+theorem col_orbit_pow_two (k : ): col_orbit
