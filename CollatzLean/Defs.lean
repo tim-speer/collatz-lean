@@ -7,6 +7,7 @@ Authors: Tim Speer
 import Mathlib.Data.PNat.Basic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Finset.Max
+import Mathlib.Order.Lattice.Nat
 
 def col (n : ℕ+) : ℕ+ :=
   if (n % 2 : ℕ) = 0 then
@@ -19,6 +20,19 @@ def col_two (n : ℕ+) : ℕ+ :=
     PNat.divExact n 2
   else
     PNat.divExact (3 * n + 1) 2
+
+def col_pow (k : ℕ) : ℕ+ → ℕ+ :=
+  if k = 0 then
+    id
+  else
+    col ∘ col_pow (k - 1)
+
+def col_orbit (n : ℕ+) : Set ℕ+ := { col_pow k n | k : ℕ }
+
+def sPNat_to_sNat (S : Set ℕ+) : Set ℕ := { ↑n | n ∈ S }
+
+noncomputable
+def col_min (n : ℕ+) : ℕ := sInf (sPNat_to_sNat (col_orbit n))
 
 def ONat : Type := { n : ℕ+ // Odd n.val }
 
@@ -43,11 +57,3 @@ def max_odd_div (n : ℕ+) : ONat := by
 
 def syr (n : ONat) : ONat :=
   max_odd_div (3 * n.val + 1)
-
-def col_pow (k : ℕ) : ℕ+ → ℕ+ :=
-  if k = 0 then
-    id
-  else
-    col ∘ col_pow (k - 1)
-
-def col_orbit (n : ℕ+) : Set ℕ+ := { col_pow k n | k : ℕ }
