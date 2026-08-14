@@ -4,35 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tim Speer
 -/
 
-import Mathlib.Data.PNat.Basic
-import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Cases
-import Mathlib.Data.Finset.Max
+import CollatzLean.Defs
 
 /-!
 -/
-
-def col (n : ℕ+) : ℕ+ :=
-  if (n % 2 : ℕ) = 0 then
-    PNat.divExact n 2
-  else
-    3 * n + 1
-
-def col_two (n : ℕ+) : ℕ+ :=
-  if (n % 2 : ℕ) = 0 then
-    PNat.divExact n 2
-  else
-    PNat.divExact (3 * n + 1) 2
-
-def col_pow (k : ℕ) : ℕ+ → ℕ+ :=
-  if k = 0 then
-    id
-  else
-    col ∘ col_pow (k - 1)
-
-def col_orbit (n : ℕ+) : Set ℕ+ := { col_pow k n | k : ℕ }
-
-def odd_nat : Set ℕ := { n : ℕ | Odd n}
 
 theorem col_pow_zero_self (n : ℕ+) : col_pow 0 n = n := by
   rw [col_pow]
@@ -88,5 +64,3 @@ theorem col_orbit_one : col_orbit 1 = { 1, 2, 4 } := by
       iterate 2
         rw [col_pow]
       trivial
-
-theorem col_orbit_pow_two (k : ): col_orbit
