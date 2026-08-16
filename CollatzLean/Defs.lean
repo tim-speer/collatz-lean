@@ -57,3 +57,9 @@ def max_odd_div (n : ℕ+) : ONat := by
 
 def syr (n : ONat) : ONat :=
   max_odd_div (3 * n.val + 1)
+
+def syr_pow (k : ℕ) : ONat → ONat :=
+  if k = 0 then
+    id
+  else
+    syr ∘ syr_pow (k - 1)
