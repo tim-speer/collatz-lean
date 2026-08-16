@@ -63,3 +63,5 @@ def syr_pow (k : ℕ) : ONat → ONat :=
     id
   else
     syr ∘ syr_pow (k - 1)
+
+def syr_orbit (n : ONat) : Set ONat := { syr_pow k n | k : ℕ }
