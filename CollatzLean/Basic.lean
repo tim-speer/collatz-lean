@@ -10,6 +10,9 @@ import CollatzLean.Defs
 /-!
 -/
 
+theorem collatz_conjecture : ∀n : ℕ+, col_min n = 1 := by
+  sorry
+
 theorem col_pow_zero_self (n : ℕ+) : col_pow 0 n = n := by
   rw [col_pow]
   trivial
