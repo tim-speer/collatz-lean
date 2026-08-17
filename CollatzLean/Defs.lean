@@ -65,3 +65,15 @@ def syr_pow (k : ℕ) : ONat → ONat :=
     syr ∘ syr_pow (k - 1)
 
 def syr_orbit (n : ONat) : Set ONat := { syr_pow k n | k : ℕ }
+
+def ONat_to_PNat (n : ONat) : ℕ+ := n.val
+def sONat_to_sPNat (S : Set ONat) : Set ℕ+ := { ONat_to_PNat n | n ∈ S }
+
+theorem col_pow_two_mul_col (n : ONat) : ∃ k : ℕ+, col n.val = 2 ^ (k.val) * (syr n).val := by
+  sorry
+
+theorem col_pow_two_times_syr (n : ONat) : ∃ k : ℕ+, (syr n).val = col_pow k n.val := by
+  sorry
+
+theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.val := by
+  sorry
