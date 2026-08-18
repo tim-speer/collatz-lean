@@ -8,6 +8,7 @@ import Mathlib.Data.PNat.Basic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Finset.Max
 import Mathlib.Order.Lattice.Nat
+import Mathlib.Tactic.Linarith
 
 def col (n : ℕ+) : ℕ+ :=
   if (n % 2 : ℕ) = 0 then
@@ -60,8 +61,7 @@ theorem max_odd_div_odd_eq_self (n : ℕ+) (n_odd : Odd n.val) : (max_odd_div n)
     rw [odd_div, max_odd_div]
     grind only [odd_div.eq_def, PNat.mk_coe, Finset.max'_eq_iff]
   have max_odd_div_dvd_n : (max_odd_div n).val ∣ n := by
-    grind only [usr Subtype.property, odd_div.eq_def, PNat.dvd_iff, = Finset.mem_filter,
-      = Nat.mem_divisors]
+    grind only [odd_div.eq_def, PNat.dvd_iff, = Finset.mem_filter, = Nat.mem_divisors]
   have max_odd_div_le_n : (max_odd_div n).val ≤ n := by
     grind only [PNat.le_of_dvd]
   have n_odd_div : n.val ∈ odd_div n := by
@@ -69,8 +69,8 @@ theorem max_odd_div_odd_eq_self (n : ℕ+) (n_odd : Odd n.val) : (max_odd_div n)
     simp_all
   have max_odd_div_ge_n : (max_odd_div n).val ≥ n := by
     rw [max_odd_div]
-    grind only [max_odd_div.eq_def, Finset.max'_eq_iff, PNat.mk_coe, PNat.coe_le_coe, #1308]
-  grind [= odd_div, = max_odd_div]
+    grind only [max_odd_div.eq_def, Finset.max'_eq_iff, PNat.mk_coe, PNat.coe_le_coe]
+  grind only
 
 theorem eq_pow_two_times_max_odd_div (n : ℕ+) : ∃ k : ℕ, n = 2 ^ k * (max_odd_div n).val := by
   sorry
