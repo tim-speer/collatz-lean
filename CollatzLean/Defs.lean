@@ -56,12 +56,24 @@ def max_odd_div (n : ℕ+) : ONat := by
     grind [= odd_div]
   exact ⟨⟨m, m_pos⟩, m_odd⟩
 
+theorem odd_div_le_max_odd_div (n : ℕ+) : ∀ d ∈ odd_div n, d ≤ (max_odd_div n).val := by
+  intro d d_odd_div
+  exact Finset.le_max' (odd_div n) d d_odd_div
+
+theorem max_odd_div_odd_div (n : ℕ+) : (max_odd_div n).val.val ∈ odd_div n := by
+  rw [odd_div, max_odd_div]
+  grind only [odd_div.eq_def, PNat.mk_coe, Finset.max'_eq_iff]
+
+theorem max_odd_div_dvd_n (n : ℕ+) : (max_odd_div n).val ∣ n := by
+  have h₁ : (max_odd_div n).val.val ∈ odd_div n := by
+    exact max_odd_div_odd_div n
+  grind only [odd_div.eq_def, PNat.dvd_iff, = Finset.mem_filter, = Nat.mem_divisors]
+
 theorem max_odd_div_odd_eq_self (n : ℕ+) (n_odd : Odd n.val) : (max_odd_div n).val = n := by
-  have max_odd_div_odd_div : (max_odd_div n).val.val ∈ odd_div n := by
-    rw [odd_div, max_odd_div]
-    grind only [odd_div.eq_def, PNat.mk_coe, Finset.max'_eq_iff]
-  have max_odd_div_dvd_n : (max_odd_div n).val ∣ n := by
-    grind only [odd_div.eq_def, PNat.dvd_iff, = Finset.mem_filter, = Nat.mem_divisors]
+  have h₁ : (max_odd_div n).val.val ∈ odd_div n := by
+    exact max_odd_div_odd_div n
+  have h₂ : (max_odd_div n).val ∣ n := by
+    exact max_odd_div_dvd_n n
   have max_odd_div_le_n : (max_odd_div n).val ≤ n := by
     grind only [PNat.le_of_dvd]
   have n_odd_div : n.val ∈ odd_div n := by
@@ -72,8 +84,82 @@ theorem max_odd_div_odd_eq_self (n : ℕ+) (n_odd : Odd n.val) : (max_odd_div n)
     grind only [max_odd_div.eq_def, Finset.max'_eq_iff, PNat.mk_coe, PNat.coe_le_coe]
   grind only
 
+theorem max_odd_div_two_eq_max_odd_div (n : ℕ+) :
+  (max_odd_div (2 * n)).val = (max_odd_div n).val := by
+  let m₁ := (max_odd_div n).val
+  let m₂ := (max_odd_div (2 * n)).val
+  have h₁ : ∃ k, n = m₁ * k := by
+    exact dvd_def.mp (max_odd_div_dvd_n n)
+  obtain ⟨k, h₁⟩ := h₁
+  have h₂ : 2 * n = 2 * k * m₁ := by
+    grind
+  have h₃ : m₁ ∣ 2 * n := by
+    exact Dvd.intro_left (2 * k) (id (Eq.symm h₂))
+  have h₄ : m₁.val ∈ odd_div (2 * n) := by
+    grind only [usr Subtype.property, odd_div.eq_def, PNat.dvd_iff, PNat.ne_zero,
+      = Finset.mem_filter, = Nat.mem_divisors]
+  have m₁_le_m₂ : ↑m₁ ≤ ↑m₂ := by
+    apply odd_div_le_max_odd_div (2 * n)
+    assumption
+  have h₅ : ∃ j, 2 * n = m₂ * j := by
+    exact dvd_def.mp (max_odd_div_dvd_n (2 * n))
+  obtain ⟨j, h₅⟩ := h₅
+  have m₂_odd : Odd m₂.val := by
+    grind
+  have m₂_mul_j_even : Even (m₂ * j).val := by
+    rw [← h₅]
+    simp
+  have m₂_even_or_j_even : Even m₂.val ∨ Even j.val := by
+    exact Nat.even_mul.mp m₂_mul_j_even
+  have j_even : Even j.val := by
+    rcases m₂_even_or_j_even with left | right
+    · apply Nat.not_odd_iff_even.mpr at left
+      contradiction
+    · assumption
+  have j_mul_two : ∃ i : ℕ+, j = 2 * i := by
+    have temp : ∃ i : ℕ, j = 2 * i := by
+      exact even_iff_exists_two_mul.mp j_even
+    obtain ⟨i, temp⟩ := temp
+    have i_pos : 0 < i := by
+      grind only [PNat.ne_zero]
+    use ⟨i, i_pos⟩
+    exact PNat.eq temp
+  obtain ⟨i, j_mul_two⟩ := j_mul_two
+  rw [j_mul_two, mul_comm m₂, mul_assoc] at h₅
+  apply mul_left_cancel at h₅
+  have h₇ : m₂ ∣ n := by
+    exact Dvd.intro_left i (id (Eq.symm h₅))
+  have h₈ : m₂.val ∈ odd_div n := by
+    grind only [usr Subtype.property, odd_div.eq_def, PNat.dvd_iff, PNat.ne_zero,
+      = Finset.mem_filter, = Nat.mem_divisors]
+  have m₂_le_m₁ : ↑m₂ ≤ ↑m₁ := by
+    apply odd_div_le_max_odd_div n
+    assumption
+  grind
+
 theorem eq_pow_two_times_max_odd_div (n : ℕ+) : ∃ k : ℕ, n = 2 ^ k * (max_odd_div n).val := by
-  sorry
+  by_cases h₁ : Odd n.val
+  · rw [max_odd_div_odd_eq_self]
+    simp
+    assumption
+  · have n_even : Even n.val := by
+      exact Nat.not_odd_iff_even.mp h₁
+    have h₂ : ∃ m : ℕ, n.val = 2 * m := by
+      exact even_iff_exists_two_mul.mp n_even
+    obtain ⟨m, h₃⟩ := h₂
+    have h₄ : 0 < m := by
+      grind only [PNat.ne_zero]
+    let q : ℕ+ := ⟨m, h₄⟩
+    have h₅ : n = 2 * q := by
+      exact PNat.eq h₃
+    rw [h₅]
+    induction q
+    use 1
+    rfl
+    rename_i i ih
+    obtain ⟨j, ih⟩ := ih
+    sorry
+
 
 def syr (n : ONat) : ONat := max_odd_div (3 * n.val + 1)
 
