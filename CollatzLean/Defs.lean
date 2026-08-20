@@ -35,6 +35,13 @@ def sPNat_to_sNat (S : Set ℕ+) : Set ℕ := { ↑n | n ∈ S }
 noncomputable
 def col_min (n : ℕ+) : ℕ := sInf (sPNat_to_sNat (col_orbit n))
 
+theorem col_of_odd_even (n : ℕ+) (n_odd : Odd n.val) : Even (col n).val := by
+  have h₁ : Odd (3 * n).val := by
+    apply Nat.odd_mul.mpr
+    exact if_false_right.mp n_odd
+  grind only [col.eq_def, PNat.one_coe, Nat.even_or_odd, Nat.not_odd_iff,
+    PNat.add_coe]
+
 def ONat : Type := { n : ℕ+ // Odd n.val }
 
 def odd_div (n : ℕ+) : Finset ℕ := { d ∈ n.val.divisors | Odd d }
@@ -55,6 +62,9 @@ def max_odd_div (n : ℕ+) : ONat := by
   have m_odd : Odd m := by
     grind [= odd_div]
   exact ⟨⟨m, m_pos⟩, m_odd⟩
+
+theorem max_odd_div_odd (n : ℕ+) : Odd (max_odd_div n).val.val := by
+  grind
 
 theorem odd_div_le_max_odd_div (n : ℕ+) : ∀ d ∈ odd_div n, d ≤ (max_odd_div n).val := by
   intro d d_odd_div
@@ -177,11 +187,29 @@ def syr_orbit (n : ONat) : Set ONat := { syr_pow k n | k : ℕ }
 def ONat_to_PNat (n : ONat) : ℕ+ := n.val
 def sONat_to_sPNat (S : Set ONat) : Set ℕ+ := { ONat_to_PNat n | n ∈ S }
 
-theorem col_pow_two_mul_col (n : ONat) : ∃ k : ℕ+, col n.val = 2 ^ (k.val) * (syr n).val := by
-  have h₁ : col n.val = 3 * n.val + 1 := by
+theorem col_pow_two_mul_syr (n : ONat) : ∃ k : ℕ+, col n.val = 2 ^ (k.val) * (syr n).val := by
+  let col_n := 3 * n.val + 1
+  have h₁ : col n.val = col_n := by
     grind [= col]
+  obtain ⟨j, h₂⟩ := eq_pow_two_times_max_odd_div col_n
+  have col_n_even : Even col_n.val := by
+    rw [← h₁]
+    apply col_of_odd_even
+    let ⟨_, n_odd⟩ := n
+    exact n_odd
+  have h₄ : 0 < j := by
+    apply Nat.pos_of_ne_zero
+    by_contra j_eq_zero
+    rw [j_eq_zero] at h₂
+    simp only [pow_zero, one_mul] at h₂
+    have col_n_odd : Odd col_n.val := by
+      rw [h₂]
+      exact max_odd_div_odd col_n
+    exact Nat.not_odd_iff_even.mpr col_n_even col_n_odd
+  let i : ℕ+ := ⟨j, h₄⟩
+  use i
   rw [h₁]
-  sorry
+  trivial
 
 theorem col_pow_two_times_syr (n : ONat) : ∃ k : ℕ+, (syr n).val = col_pow k n.val := by
   sorry
