@@ -138,28 +138,31 @@ theorem max_odd_div_two_eq_max_odd_div (n : ℕ+) :
   grind
 
 theorem eq_pow_two_times_max_odd_div (n : ℕ+) : ∃ k : ℕ, n = 2 ^ k * (max_odd_div n).val := by
-  by_cases h₁ : Odd n.val
-  · rw [max_odd_div_odd_eq_self]
+  induction n using PNat.strongInductionOn
+  rename_i i ih
+  by_cases h₁ : Odd i.val
+  · rw [max_odd_div_odd_eq_self i h₁]
+    use 0
     simp
-    assumption
-  · have n_even : Even n.val := by
-      exact Nat.not_odd_iff_even.mp h₁
-    have h₂ : ∃ m : ℕ, n.val = 2 * m := by
-      exact even_iff_exists_two_mul.mp n_even
-    obtain ⟨m, h₃⟩ := h₂
-    have h₄ : 0 < m := by
-      grind only [PNat.ne_zero]
-    let q : ℕ+ := ⟨m, h₄⟩
-    have h₅ : n = 2 * q := by
-      exact PNat.eq h₃
-    rw [h₅]
-    induction q
-    use 1
-    rfl
-    rename_i i ih
-    obtain ⟨j, ih⟩ := ih
-    sorry
-
+  have i_even : Even i.val := by
+    exact Nat.not_odd_iff_even.mp h₁
+  have h₂ : ∃ q, i.val = 2 * q := by
+    exact even_iff_exists_two_mul.mp i_even
+  obtain ⟨q, h₂⟩ := h₂
+  have h₃ : 0 < q := by
+    grind only [PNat.ne_zero]
+  let r : ℕ+ := ⟨q, h₃⟩
+  have h₄ : i = 2 * r := by
+    exact PNat.eq h₂
+  have r_lt_i : r < i := by
+    simp_all
+  obtain ihr := ih r r_lt_i
+  obtain ⟨j, ihr⟩ := ihr
+  use (j + 1)
+  rw [h₄, max_odd_div_two_eq_max_odd_div]
+  have h₅ : (2 ^ (j + 1) : ℕ+) = 2 * 2 ^ j := by
+    exact pow_succ' 2 j
+  rw [h₅, mul_assoc, ← ihr]
 
 def syr (n : ONat) : ONat := max_odd_div (3 * n.val + 1)
 
