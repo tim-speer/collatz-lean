@@ -295,3 +295,6 @@ theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.va
     exact pow_of_col_eq_pow_of_syr n j
   obtain ⟨k, h₂⟩ := h₂
   solve_by_elim
+
+noncomputable
+def syr_min (n : ONat) : ℕ := sInf (sPNat_to_sNat (sONat_to_sPNat (syr_orbit n)))
