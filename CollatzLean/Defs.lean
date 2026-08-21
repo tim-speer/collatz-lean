@@ -276,15 +276,12 @@ theorem pow_of_col_eq_pow_of_syr (n : ONat) (j : ℕ) : ∃ k, col_pow k n.val =
   let col_pow_j : ONat := ⟨col_pow j n.val, col_pow_j_odd⟩
   have h₁ : col_pow_j = syr_pow i n := by
     aesop
-  rw [syr_pow]
-  simp
-  rw [← h₁]
   have h₂ : ∃ m : ℕ+, col_pow m col_pow_j.val = (syr col_pow_j).val := by
     exact pow_of_col_eq_syr (col_pow_j)
   obtain ⟨m, h₂⟩ := h₂
-  rw [← h₂]
   use m + j
-  sorry
+  rw [← col_pow_of_col_pow_add, Function.comp_apply, ih, ← h₁, h₂, syr_pow]
+  simp_all
 
 theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.val := by
   intro x x_in_syr_orb
