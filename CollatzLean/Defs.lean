@@ -211,7 +211,7 @@ theorem col_pow_two_mul_syr (n : ONat) : ∃ k : ℕ+, col n.val = 2 ^ (k.val) *
   rw [h₁]
   trivial
 
-theorem col_pow_suc (n : ℕ+) (k : ℕ) : col_pow (k + 1) n = col_pow k (col n) := by
+theorem col_pow_suc (k : ℕ) : col_pow (k + 1) = col_pow k ∘ col := by
   induction k
   · rw [col_pow, col_pow]
     rfl
@@ -243,8 +243,15 @@ theorem col_pow_of_pow_two_eq_id (n : ℕ+) (k : ℕ) : col_pow k (2 ^ k * n) = 
   · rw [col_pow]
     simp
   rename_i i ih
-  rw [col_pow_suc, col_two_pow_suc]
-  assumption
+  rw [col_pow_suc]
+  grind only [col_two_pow_suc]
+
+theorem col_pow_of_col_pow_add (j k : ℕ) : col_pow k ∘ col_pow j = col_pow (k + j) := by
+  induction j
+  · nth_rw 2 [col_pow]
+    simp
+  rename_i i ih
+  grind only [col_pow_suc, Function.comp_assoc]
 
 theorem pow_of_col_eq_syr (n : ONat) : ∃ k : ℕ+, col_pow k n.val = (syr n).val := by
   have h₁ : ∃ k : ℕ+, col n.val = 2 ^ (k.val) * (syr n).val := by
@@ -253,8 +260,40 @@ theorem pow_of_col_eq_syr (n : ONat) : ∃ k : ℕ+, col_pow k n.val = (syr n).v
   use j + 1
   have h₂ : (↑j + 1 : ℕ) = ↑(j + 1) := by
     rfl
-  rw [← h₂, col_pow_suc n.val j, h₁]
-  exact col_pow_of_pow_two_eq_id (syr n).val ↑j
+  rw [← h₂, col_pow_suc]
+  grind only [col_pow_of_pow_two_eq_id]
+
+theorem pow_of_col_eq_pow_of_syr (n : ONat) (j : ℕ) : ∃ k, col_pow k n.val = (syr_pow j n).val := by
+  induction j
+  · use 0
+    rw [col_pow, syr_pow]
+    rfl
+  rename_i i ih
+  obtain ⟨j, ih⟩ := ih
+  have col_pow_j_odd : Odd (col_pow j n.val).val := by
+    rw [ih]
+    grind
+  let col_pow_j : ONat := ⟨col_pow j n.val, col_pow_j_odd⟩
+  have h₁ : col_pow_j = syr_pow i n := by
+    aesop
+  rw [syr_pow]
+  simp
+  rw [← h₁]
+  have h₂ : ∃ m : ℕ+, col_pow m col_pow_j.val = (syr col_pow_j).val := by
+    exact pow_of_col_eq_syr (col_pow_j)
+  obtain ⟨m, h₂⟩ := h₂
+  rw [← h₂]
+  use m + j
+  sorry
 
 theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.val := by
-  sorry
+  intro x x_in_syr_orb
+  have h₁ : ∃ k : ℕ, x = (syr_pow k n).val := by
+    sorry
+  obtain ⟨k, h₁⟩ := h₁
+  have h₂ : ∃ j : ℕ+, col_pow j n.val = (syr n).val := by
+    exact pow_of_col_eq_syr n
+  obtain ⟨j, h₂⟩ := h₂
+  have h₃ : x = col_pow (k * ↑j) n.val := by
+    sorry
+  grind only [col_orbit, usr Set.mem_setOf_eq]
