@@ -285,12 +285,13 @@ theorem pow_of_col_eq_pow_of_syr (n : ONat) (j : ℕ) : ∃ k, col_pow k n.val =
 
 theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.val := by
   intro x x_in_syr_orb
-  have h₁ : ∃ k : ℕ, x = (syr_pow k n).val := by
-    sorry
-  obtain ⟨k, h₁⟩ := h₁
-  have h₂ : ∃ j : ℕ+, col_pow j n.val = (syr n).val := by
-    exact pow_of_col_eq_syr n
-  obtain ⟨j, h₂⟩ := h₂
-  have h₃ : x = col_pow (k * ↑j) n.val := by
-    sorry
-  grind only [col_orbit, usr Set.mem_setOf_eq]
+  obtain ⟨y, y_in_syr_orb⟩ := x_in_syr_orb
+  have h₁ : ∃ j : ℕ, y = syr_pow j n := by
+    grind [= syr_orbit, = ONat_to_PNat]
+  obtain ⟨j, h₁⟩ := h₁
+  rw [ONat_to_PNat] at y_in_syr_orb
+  have h₂ : ∃ k : ℕ, col_pow k n.val = x := by
+    rw [← y_in_syr_orb.right, h₁]
+    exact pow_of_col_eq_pow_of_syr n j
+  obtain ⟨k, h₂⟩ := h₂
+  solve_by_elim
