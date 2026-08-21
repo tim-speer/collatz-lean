@@ -212,7 +212,11 @@ theorem col_pow_two_mul_syr (n : ONat) : ∃ k : ℕ+, col n.val = 2 ^ (k.val) *
   trivial
 
 theorem col_pow_suc (n : ℕ+) (k : ℕ) : col_pow (k + 1) n = col_pow k (col n) := by
-  sorry
+  induction k
+  · rw [col_pow, col_pow]
+    rfl
+  rename_i i ih
+  grind only [col_pow.eq_def, Function.comp_def]
 
 theorem col_two_pow_suc (n : ℕ+) (k : ℕ) : col (2 ^ (k + 1) * n) = 2 ^ k * n := by
   have h₁ : 2 ∣ (2 ^ (k + 1) * n).val := by
