@@ -215,7 +215,24 @@ theorem col_pow_suc (n : ℕ+) (k : ℕ) : col_pow (k + 1) n = col_pow k (col n)
   sorry
 
 theorem col_two_pow_suc (n : ℕ+) (k : ℕ) : col (2 ^ (k + 1) * n) = 2 ^ k * n := by
-  sorry
+  have h₁ : 2 ∣ (2 ^ (k + 1) * n).val := by
+    rw [pow_succ]
+    nth_rw 2 [mul_comm]
+    rw [mul_assoc]
+    simp
+  have h₂ : Even (2 ^ (k + 1) * n).val := by
+    exact even_iff_two_dvd.mpr h₁
+  have h₃ : 2 * ((2 ^ (k + 1) * n).divExact 2) = 2 * (2 ^ k * n) := by
+    rw [← mul_assoc]
+    nth_rw 4 [mul_comm]
+    rw [← pow_succ]
+    grind only [PNat.mul_div_exact, PNat.mul_coe, PNat.pow_coe, usr Nat.div_pow_of_pos,
+      PNat.dvd_iff, usr Nat.dvd_mul_right_of_dvd]
+  have h₄ : (2 ^ (k + 1) * n).divExact 2 = 2 ^ k * n := by
+    exact mul_left_cancel h₃
+  rw [col, Nat.even_iff.mp]
+  · assumption
+  grind only [even_iff_exists_add_self, PNat.add_coe]
 
 theorem col_pow_of_pow_two_eq_id (n : ℕ+) (k : ℕ) : col_pow k (2 ^ k * n) = n := by
   induction k
