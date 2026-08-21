@@ -211,8 +211,29 @@ theorem col_pow_two_mul_syr (n : ONat) : ∃ k : ℕ+, col n.val = 2 ^ (k.val) *
   rw [h₁]
   trivial
 
-theorem col_pow_two_times_syr (n : ONat) : ∃ k : ℕ+, (syr n).val = col_pow k n.val := by
+theorem col_pow_suc (n : ℕ+) (k : ℕ) : col_pow (k + 1) n = col_pow k (col n) := by
   sorry
+
+theorem col_two_pow_suc (n : ℕ+) (k : ℕ) : col (2 ^ (k + 1) * n) = 2 ^ k * n := by
+  sorry
+
+theorem col_pow_of_pow_two_eq_id (n : ℕ+) (k : ℕ) : col_pow k (2 ^ k * n) = n := by
+  induction k
+  · rw [col_pow]
+    simp
+  rename_i i ih
+  rw [col_pow_suc, col_two_pow_suc]
+  assumption
+
+theorem pow_of_col_eq_syr (n : ONat) : ∃ k : ℕ+, col_pow k n.val = (syr n).val := by
+  have h₁ : ∃ k : ℕ+, col n.val = 2 ^ (k.val) * (syr n).val := by
+    exact col_pow_two_mul_syr n
+  obtain ⟨j, h₁⟩ := h₁
+  use j + 1
+  have h₂ : (↑j + 1 : ℕ) = ↑(j + 1) := by
+    rfl
+  rw [← h₂, col_pow_suc n.val j, h₁]
+  exact col_pow_of_pow_two_eq_id (syr n).val ↑j
 
 theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.val := by
   sorry
