@@ -16,6 +16,7 @@ theorem collatz_conjecture : ∀n : ℕ+, col_min n = 1 := by
 theorem collatz_conjecture2 : ∀n : ONat, syr_min n = 1 := by
   sorry
 
+
 theorem col_pow_zero_self (n : ℕ+) : col_pow 0 n = n := by
   rw [col_pow]
   trivial
@@ -70,3 +71,8 @@ theorem col_orbit_one : col_orbit 1 = { 1, 2, 4 } := by
       iterate 2
         rw [col_pow]
       trivial
+
+def one : ONat := ⟨1, Nat.odd_iff.mpr rfl⟩
+
+theorem syr_orbit_one : syr_orbit one = { one } := by
+  sorry
