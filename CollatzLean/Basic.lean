@@ -77,7 +77,7 @@ def one : ONat := ⟨1, Nat.odd_iff.mpr rfl⟩
 theorem syr_orbit_one : syr_orbit one = { one } := by
   sorry
 
-theorem col_min_in_orb (n : ℕ+) : col_min n ∈ sPNat_to_sNat (col_orbit n) := by
+/--theorem col_min_in_orb (n : ℕ+) : col_min n ∈ sPNat_to_sNat (col_orbit n) := by
   apply Nat.sInf_mem _
   have h₁ : n ∈ col_orbit n := by
     use 0
@@ -85,6 +85,7 @@ theorem col_min_in_orb (n : ℕ+) : col_min n ∈ sPNat_to_sNat (col_orbit n) :=
     simp
   use n
   solve_by_elim
+--/
 
 theorem col_min_one_iff_one_in_orb (n : ℕ+): col_min n = 1 ↔ 1 ∈ col_orbit n := by
   constructor

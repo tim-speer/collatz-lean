@@ -30,10 +30,29 @@ def col_pow (k : ℕ) : ℕ+ → ℕ+ :=
 
 def col_orbit (n : ℕ+) : Set ℕ+ := { col_pow k n | k : ℕ }
 
+theorem col_orbit_nonempty (n : ℕ+) : (col_orbit n).Nonempty := by
+  use n
+  use 0
+  rw [col_pow]
+  simp
+
 def sPNat_to_sNat (S : Set ℕ+) : Set ℕ := { ↑n | n ∈ S }
 
+theorem col_orbit_nat_nonempty (n : ℕ+) : (sPNat_to_sNat (col_orbit n)).Nonempty := by
+  obtain h₁ := col_orbit_nonempty n
+  rcases h₁ with ⟨x, x_in_col_orb⟩
+  use ↑x
+  solve_by_elim
+
 noncomputable
-def col_min (n : ℕ+) : ℕ := sInf (sPNat_to_sNat (col_orbit n))
+def col_min (n : ℕ+) : ℕ+ := by
+  let orb := sPNat_to_sNat (col_orbit n)
+  let m := sInf orb
+  have h₁ : ∀ x ∈ orb, 1 ≤ x := by
+    grind only [sPNat_to_sNat.eq_def, usr Set.mem_setOf_eq, PNat.ne_zero]
+  have h₂ : m ∈ orb := by
+    exact Nat.sInf_mem (col_orbit_nat_nonempty n)
+  exact ⟨m, h₁ m h₂⟩
 
 theorem col_of_odd_even (n : ℕ+) (n_odd : Odd n.val) : Even (col n).val := by
   have h₁ : Odd (3 * n).val := by
