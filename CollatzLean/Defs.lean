@@ -317,3 +317,14 @@ theorem syr_sub_col (n : ONat) : sONat_to_sPNat (syr_orbit n) ⊆ col_orbit n.va
 
 noncomputable
 def syr_min (n : ONat) : ℕ := sInf (sPNat_to_sNat (sONat_to_sPNat (syr_orbit n)))
+
+theorem col_min_in_orb (n : ℕ+) : col_min n ∈ col_orbit n := by
+  have h₁ : ↑(col_min n) ∈ sPNat_to_sNat (col_orbit n) := by
+    exact Nat.sInf_mem (col_orbit_nat_nonempty n)
+  grind only [PNat.coe_injective, sPNat_to_sNat.eq_def, usr Set.mem_setOf_eq]
+
+theorem col_min_one_iff_one_in_orb (n : ℕ+): col_min n = 1 ↔ 1 ∈ col_orbit n := by
+  constructor
+  · intro col_min_one
+    sorry
+  sorry
