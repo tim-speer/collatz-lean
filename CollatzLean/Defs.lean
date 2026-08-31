@@ -323,8 +323,15 @@ theorem col_min_in_orb (n : ℕ+) : col_min n ∈ col_orbit n := by
     exact Nat.sInf_mem (col_orbit_nat_nonempty n)
   grind only [PNat.coe_injective, sPNat_to_sNat.eq_def, usr Set.mem_setOf_eq]
 
-theorem col_min_one_iff_one_in_orb (n : ℕ+): col_min n = 1 ↔ 1 ∈ col_orbit n := by
+theorem col_min_one_iff_one_in_orb (n : ℕ+) : col_min n = 1 ↔ 1 ∈ col_orbit n := by
   constructor
   · intro col_min_one
-    sorry
-  sorry
+    grind only [col_min_in_orb]
+  intro one_in_orb
+  have h₁ : col_min n ≥ 1 := by
+    simp
+  have h₂ : 1 ∈ sPNat_to_sNat (col_orbit n) := by
+    grind only [sPNat_to_sNat.eq_def, PNat.one_coe, usr Set.mem_setOf_eq]
+  have h₃ : col_min n ≤ 1 := by
+    exact Nat.sInf_le h₂
+  exact eq_one_of_le_one h₃
